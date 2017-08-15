@@ -1,4 +1,4 @@
-#Closing market rate for every crypto currency
+# Closing market rate for every crypto currency
 ## Features
 - 878 Crypto currencies/tokens
 - 1,500 different daily s
