@@ -1,4 +1,9 @@
-# Closing market rate for every crypto currency
+# Historical Cryptocurrency Prices (All Tokens)
+## 509,000 rows of daily closing market data for 1111 coins/tokens over 5 years <br/>
+
+I regulary update the dataset at the following link: <br/>
+<https://www.kaggle.com/jessevent/all-crypto-currencies>
+
 ## Features
 - 1,111 Crypto currencies/tokens
 - Every day of tokens life
@@ -9,7 +14,7 @@
 ## Description
 After not easily being able to find crypto market datasets I figured I'd do my part for the community and scrape my own.
 
-This script provides a huge dataset contains all the daily details of the crypto-markets as they close for over 878 different crypto currencies and tokens. If it is built off of the block chain it should be available in this set, no matter how new or old it is.
+This script provides a huge dataset contains all the daily details of the crypto-markets as they close for over 1111 different crypto currencies and tokens. If it is built off of the block chain it should be available in this set, no matter how new or old it is.
 
 ## My process
 I collected this data by using R to extract the names of all the tokens from a CMC API, then use the token names to go scrape CMC's historical data tables for each token. I did a na.omit on all rows to clean the data because some of it was missing. This reduced row count from 487363 to 419671 rows.
