@@ -1,74 +1,75 @@
-# This script will scrape all of the market close data each day for all the cryptocurrencies listed on CMC.
-#Load dependencies.
+# This script will retrieve every cryptocurrency token and the closing market data for each day it has been active.
+# Loading Packages
 require(jsonlite)
 require(dplyr)
 require(doSNOW)
 require(doParallel)
 require(lubridate)
 
-# Define parameters.
-file <- "~/Desktop/crypto-markets.csv"
-range <-
-  1:50  # If you dont want to get the entire lot change this to like 1:100.
-cpu <-
-  as.numeric(detectCores())  # I'm running 4 cores, but this should pick up your max-cores.
+#Define parameters
+file <- "~/Desktop/Crypto-Markets.csv"
+cpucore <-
+  as.numeric(detectCores(all.tests = FALSE, logical = TRUE))
+today <- gsub("-", "", today())
+
+# Get exchange rates
+exchange_rate <- fromJSON("https://api.fixer.io/latest?base=USD")
+AUD <- exchange_rate$rates$AUD
 ptm <- proc.time()
 
-# Get USD to AUD exchange rate.
-rate <- fromJSON("https://api.fixer.io/latest?base=USD")
-aud <- rate$rates$AUD
-
-# Retrieve listing of top {RANGE} of coins and get slugs to be used for searching.
+# Retrieve listing of coin slugs to be used for searching.
+# range <- 1:50 # uncomment this if you only was a specific number
 json <-
   "https://files.coinmarketcap.com/generated/search/quick_search.json"
-coins <-
-  jsonlite::read_json(json, simplifyVector = TRUE) %>% head(arrange(coins,
-                                                                    rank), n = max(range))
+coins <- jsonlite::read_json(json, simplifyVector = TRUE)
+length <- as.numeric(length(coins$slug))
+range <- 1:length
+coins <- head(arrange(coins, rank), n = range)
 symbol <- coins$slug
 
-# Setup population of urls to scrape the historic tables.
+# Setup population of URLS we will scrape the history for
 url <-
   paste0(
     "https://coinmarketcap.com/currencies/",
     symbol,
-    "/historical-data/?start=20130428&end=20170815"
+    "/historical-data/?start=20130428&end=",
+    today
   )
-attr <- c(url)
+baseurl <- c(url)
+urllist <- data.frame(url = baseurl, stringsAsFactors = FALSE)
+attributes <- as.character(urllist$url)
 
-# Start parallel processing!!!
-cluster <- makeCluster(cpu, type = "SOCK")
+# Start parallel processing
+cluster = makeCluster(cpucore, type = "SOCK")
 registerDoSNOW(cluster)
 
-# Start scraping function to extract historical results table.
-abstracts <- function(attr) {
-  library(rvest)
-  page <- read_html(attr)
-# Get coin name.
-  names <-
-    page %>% html_nodes(".col-sm-4 .text-large") %>% html_text(trim = TRUE) %>%
-    replace(!nzchar(.), NA)
-# Get historical data.
-  nodes <-
-    page %>% html_nodes("table") %>% .[1] %>% html_table(fill = TRUE)
-# Combine the two and normalise names.
-  abstracts <- Reduce(rbind, nodes)
-  abstracts$coinname <- names
-  names(abstracts) <-
-    c("date",
-      "open",
-      "high",
-      "low",
-      "close",
-      "volume",
-      "market",
-      "coin")
-  return(abstracts)
-}
-# This took me ages to work out how to do nicely, but will combine data frames in parallel.
-results <-
-  foreach(i = range, .combine = rbind) %dopar% abstracts(attr[i])
+# Start scraping function to extract historical results table
+abstracts <-
+  function(attributes) {
+    library(rvest)
+    page <- read_html(attributes)
+    names <-
+      page %>% html_nodes(".col-sm-4 .text-large") %>% html_text(trim = TRUE) %>% replace(!nzchar(.), NA)
+    nodes <-
+      page %>% html_nodes("table") %>% .[1] %>% html_table(fill = TRUE)
+    abstracts <- Reduce(rbind, nodes)
+    abstracts$coinname = names
+    names(abstracts) <-
+      c("date",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "market",
+        "coin")
+    return(abstracts)
+  }
 
-# Clean up on aisle temp
+# Will combine data frames in parallel
+results = foreach(i = range, .combine = rbind) %dopar% abstracts(attributes[i])
+
+# Clean up
 temp <- na.omit(results)
 temp$volume <- as.numeric(gsub(",|-", "", temp$volume))
 temp$market <- as.numeric(gsub(",|-", "", temp$market))
@@ -80,11 +81,11 @@ temp$close <- as.numeric(temp$close)
 temp$high <- as.numeric(temp$high)
 temp$low <- as.numeric(temp$low)
 temp$coin <- as.factor(temp$coin)
-marketdata <- na.omit(temp)
+marketdata <- temp
 
 # Add columns with price in Australian dollars and open/close variance
-marketdata$aud_open <- marketdata$open * aud
-marketdata$aud_close <- marketdata$close * aud
+marketdata$aud_open <- marketdata$open * AUD
+marketdata$aud_close <- marketdata$close * AUD
 marketdata$variance <-
   ((marketdata$aud_close - marketdata$aud_open) / marketdata$aud_close)
 write.csv(marketdata, file)
