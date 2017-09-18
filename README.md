@@ -1,9 +1,10 @@
 # Closing market rate for every crypto currency
 ## Features
-- 878 Crypto currencies/tokens
-- 1,500 different daily s
-- 420,000 glorious rows
+- 1,111 Crypto currencies/tokens
+- Every day of tokens life
+- 509,000 glorious rows
 - 11 variables
+- Full and regulary updated dataset available on Kaggle
 
 ## Description
 After not easily being able to find crypto market datasets I figured I'd do my part for the community and scrape my own.
