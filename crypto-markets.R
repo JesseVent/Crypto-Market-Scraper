@@ -3,6 +3,7 @@ require(dplyr)
 require(doSNOW)
 require(doParallel)
 require(lubridate)
+
 # Define parameters
 file <- "~/Desktop/Crypto-Markets.csv"
 cpucore <-
@@ -19,6 +20,7 @@ length <- as.numeric(length(coins$slug))
 range <- 1:length
 coins <- head(arrange(coins, rank), n = range)
 symbol <- coins$slug
+
 # Setup population of URLS we will scrape the history for
 url <-
   paste0(
@@ -30,11 +32,14 @@ url <-
 baseurl <- c(url)
 urllist <- data.frame(url = baseurl, stringsAsFactors = FALSE)
 attributes <- as.character(urllist$url)
+
 # Start parallel processing
 cluster = makeCluster(cpucore, type = "SOCK", outfile = "")
 registerDoSNOW(cluster)
+
 # Display progress bar
 pb <- txtProgressBar(min = 1, max = length, style = 3)
+
 # Start scraping function
 abstracts <- function(attributes) {
   library(rvest)
@@ -46,6 +51,7 @@ abstracts <- function(attributes) {
     page %>% html_nodes(css = "table") %>% .[1] %>% html_table(fill = TRUE) %>%
     replace(!nzchar(.), NA)
   abstracts <- Reduce(rbind, nodes)
+  
   # Splitting up the scraped names and cleaning them up nicely.
   abstracts$names <- gsub("\\(||\\n|\\)|\\s\\s", "", names)
   abstracts$coin <-
@@ -66,6 +72,7 @@ abstracts <- function(attributes) {
       "coin")
   return(abstracts)
 }
+
 # Bind parallel dataframes and transform into results.
 results = foreach(i = range, .combine = rbind) %dopar%
 {
@@ -75,6 +82,7 @@ results = foreach(i = range, .combine = rbind) %dopar%
 close(pb)
 stopCluster(cluster)
 print(proc.time() - ptm)
+
 # Clean up all the fields.
 names(results) <-
   c("date",
@@ -101,11 +109,15 @@ marketdata$high <- as.numeric(marketdata$high)
 marketdata$low <- as.numeric(marketdata$low)
 marketdata$volume <- as.numeric(marketdata$volume)
 marketdata$market <- as.numeric(marketdata$market)
+
 # Percent variance between open and close rates
 marketdata$variance <-
   ((marketdata$close - marketdata$open) / marketdata$close)
-# spread variance between days high, low and closing
+
+# Market spread variance between days high, low and closing
 marketdata$volatility <-
   ((marketdata$high - marketdata$low) / marketdata$close)
+
+# Export dataset to CSV and finish timing
 write.csv(marketdata, file)
 print(proc.time() - ptm)
