@@ -11,6 +11,8 @@ I regulary update the dataset at the following link: <br/>
 - 12 variables
 - Data current up until 7th November 2017
 
+This script takes 380 seconds to run on my 2016 iMac, and has not been tested on a windows platform.
+
 ## Description
 After not easily being able to find crypto market datasets I figured I'd do my part for the community and scrape my own.
 
