@@ -1,44 +1,43 @@
 # Historical Cryptocurrency Prices (All Tokens)
-## 509,000 rows of daily closing market data for 1111 coins/tokens over 5 years <br/>
+## 620,000 rows of daily closing market data for 1265 coins/tokens over 5 years <br/>
 
 I regulary update the dataset at the following link: <br/>
 <https://www.kaggle.com/jessevent/all-crypto-currencies>
 
 ## Features
-- 1,111 Crypto currencies/tokens
-- Every day of tokens life
-- 509,000 glorious rows
-- 11 variables
-- Full and regulary updated dataset available on Kaggle
+- 1265 unique crypto currencies/tokens 
+- 1,700 different days of market data
+- 620000 glorious rows
+- 12 variables
+- Data current up until 7th November 2017
 
 ## Description
 After not easily being able to find crypto market datasets I figured I'd do my part for the community and scrape my own.
 
-This script provides a huge dataset contains all the daily details of the crypto-markets as they close for over 1111 different crypto currencies and tokens. If it is built off of the block chain it should be available in this set, no matter how new or old it is.
+This huge dataset contains all the daily details of the crypto-markets as they close for all the different crypto currencies and tokens listed on CoinMarketCaps historical tables. 
 
 ## My process
-I collected this data by using R to extract the names of all the tokens from a CMC API, then use the token names to go scrape CMC's historical data tables for each token. I did a na.omit on all rows to clean the data because some of it was missing. This reduced row count from 487363 to 419671 rows.
-
-I used the amazing doSnow and doParallel packages which allowed me to call 2 APIs, scrape lengthy HTML tables from 1060 pages, and return 487363 rows in only 5 minutes. I've included the link to the actual dataset that I have uploaded onto kaggle. Feel free to check it out <br/>
+I used the amazing doSnow and doParallel packages which allowed me to call 2 APIs, scrape a ridiculous amount of lengthy HTML pages, all the data in around 5 minutes. I've included the link to the scraping script hosted on my GitHub repository below. Feel free to check it out <br/>
+https://github.com/JesseVent/Crypto-Market-Scraper
 
 ## Content
-The earliest date available is 28/04/2013 up until 15/08/2017 which is the earliest period coinmarketcap displays for any coin. In addition to the standard fields I've added two derived columns for open and close prices in $AUD as well as the variance between open and close prices.
+The earliest date available is 28/04/2013 which is the earliest period coinmarketcap displays for any coin. In addition to the standard fields I've added two derived columns for open and close prices in $AUD as well as the variance between open and close prices.
 
 Some particularly interesting things I noticed were how much the alt-coins fall when bitcoin rises dramatically (people pulling out of alt-coins to invest in bitcoin) and the beginning and ends of every calendar month seems to be when the market as a whole seems to gain the most.
 
-## Data Samples
-$ date : Date "2017-08-14" "2017-08-13" "2017-08-12" "2017-08-11" <br/> 
-$ open : num 4066 3880 3651 3374 3342<br/>
-$ high : num 4325 4208 3950 3680 3453<br/>
-$ low : num 3989 3858 3614 3372 3319<br/>
-$ close : num 4325 4073 3885 3651 3381<br/>
-$ volume : num 2.46e+09 3.16e+09 2.22e+09 2.02e+09 1.52e+09<br/>
-$ market : num 6.71e+10 6.40e+10 6.02e+10 5.57e+10 5.51e+10<br/>
-$ coin : Factor w/ 878 levels "020LondonCoin (020)",..: 85 85 85 85 85 85 85 85 85 85<br/>
-$ aud_open : num 5165 4929 4637 4286 4245<br/>
-$ aud_close: num 5494 5174 4935 4637 4295<br/>
-$ variance : num 0.0599 0.0474 0.0603 0.0758 0.0117
-
+    'data.frame':	620245 obs. of  12 variables:
+     $ symbol    : chr  "$$$" "$$$" "$$$" "$$$" ...
+     $ date      : chr  "2016-09-04" "2016-09-02" "2017-09-07" "2017-01-06" ...
+     $ open      : num  0.000006 0.000011 0.001754 0.00003 0.001679 ...
+     $ high      : num  0.000012 0.000011 0.001875 0.000037 0.001917 ...
+     $ low       : num  0.000006 0.000006 0.001614 0.000027 0.001594 ...
+     $ close     : num  1.20e+05 6.00e+06 1.67e-03 2.70e+05 1.76e-03 ...
+     $ volume    : num  1 4 873 1 1467 ...
+     $ market    : num  275 525 80499 1395 77047 ...
+     $ name      : chr  "Money" "Money" "Money" "Money" ...
+     $ ranknow   : num  814 814 814 814 814 814 814 814 814 814 ...
+     $ variance  : num  1 1 -0.0503 1 0.0449 ...
+     $ volatility: num  5.00e-11 8.33e-13 1.56e-01 3.70e-11 1.84e-01 ...
 
 ## Closing Comments
 Thanks to the team at <https://coinmarketcap.com> for the great work they do and to the team at CoinTelegraph where the images were sourced.
