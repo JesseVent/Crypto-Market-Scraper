@@ -1,5 +1,18 @@
-# Historical Cryptocurrency Prices (All Tokens)
-## 620,000 rows of daily closing market data for 1265 coins/tokens over 5 years <br/>
+# Historical Cryptocurrency Prices (All Tokens) --DEPRECATED
+
+## This version is now deprecated and I have now ported it over into a R package called crypto.
+I've had to go over the code with a fine tooth comb to get it compatible with CRAN so there have been significant enhancements to how some of the field conversions have been undertaken and the data being cleaned. This should eliminate a few issues around number formatting or unexpected handling of scientific notations.
+
+I hope you all find the package alot more intuitive and simpler to install and use. 
+
+- [R Package: crypto](https://github.com/JesseVent/crypto) - Retrieve Cryptocurrency Prices from a R package.
+
+### Quick and dirty install
+```
+devtools::install_github("jessevent/crypto")
+library(crypto)
+will_i_get_rich <- getCoins()
+```
 
 I regulary update the dataset at the following link: <br/>
 <https://www.kaggle.com/jessevent/all-crypto-currencies>
